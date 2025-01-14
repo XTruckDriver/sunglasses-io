@@ -1,11 +1,19 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
-    version: '1.0.0'
-    title: 'E-Commerce API'
-    description: 'API for managing brands, products, and user cart'
-host: 'localhost:3000'
+  version: "1.0.0"
+  title: "Sunglasses"
+  description: "API for e-commerce sunglasses store managing brands, products, and user cart"
+host: "localhost:3000"
 schemes:
-    - 'http'
-basePath: '/api'
+  - "http"
+basePath: "/api"
 produces:
-    - 'application/json'
+  - "application/json"
+paths:
+  /products:
+    tags:
+      - "products"
+    summary: "returns all products"
+    description: ""
+    produces:
+      - "application/json"
