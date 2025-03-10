@@ -7,7 +7,18 @@ chai.use(chaiHttp);
 
 // TODO: Write tests for the server
 
-describe('Brands', () => {});
+describe('/GET brands', () => {
+  it('should return an array of all brands', (done) => {
+    chai
+      .request(server)
+      .get('/brands')
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.should.be.an('array');
+        done();
+      });
+  });
+});
 
 describe('Login', () => {});
 
