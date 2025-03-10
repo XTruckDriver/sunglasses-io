@@ -14,7 +14,7 @@ describe('/GET brands', () => {
       .get('/brands')
       .end((err, res) => {
         res.should.have.status(200);
-        res.should.be.an('array');
+        res.body.should.be.an('array');
         done();
       });
   });

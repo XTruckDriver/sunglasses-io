@@ -19,6 +19,10 @@ app.use((err, req, res, next) => {
 	res.status(500).send('Something broke!');
 });
 
+app.get('/brands', (req, res) => {
+	res.status(200).json(brands);
+});
+
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
