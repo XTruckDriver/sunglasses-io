@@ -23,6 +23,10 @@ app.get('/brands', (req, res) => {
 	res.status(200).json(brands);
 });
 
+app.get('/products', (req, res) => {
+	res.status(200).json(products);
+});
+
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
