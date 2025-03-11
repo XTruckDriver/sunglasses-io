@@ -17,6 +17,19 @@ describe('/GET brands', () => {
         res.body.should.be.an('array');
         done();
       });
+  }); 
+});
+
+describe('/GET products', () => {
+  it('should return an array of ALL products from all brands', (done) => {
+    chai
+      .request(server)
+      .get('/products')
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        done();
+      });
   });
 });
 
