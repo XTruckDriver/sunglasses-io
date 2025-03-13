@@ -23,6 +23,12 @@ app.get('/brands', (req, res) => {
 	res.status(200).json(brands);
 });
 
+app.get('/brands/:id/products', (req, res) => {
+	const brandId = req.params.id;
+	const selectedProducts = products.filter(product => product.categoryId == brandId);
+	res.status(200).json(selectedProducts);
+});
+
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
