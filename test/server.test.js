@@ -22,15 +22,16 @@ describe('/GET brands', () => {
 
 describe('/GET brands/:id/products', () => {
   it('should return array of products for a given brand', (done) => {
-    const targetId = brands[0].id;
-
+    
+    const brandId = 1;
+      
     chai
       .request(server)
-      .get(`brands/${targetId}/products`)
+      .get(`/brands/${brandId}/products`)
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.an('array');
-        res.body.every(product => product.id === targetId).should.be.true;
+        res.body.every(product => product.categoryId == brandId).should.be.true;
         done();
       });
     
