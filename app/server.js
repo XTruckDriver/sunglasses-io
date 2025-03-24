@@ -6,6 +6,8 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml'); // Replace './swagger.yaml' with the path to your Swagger file
 const app = express();
 
+const PRIVATE_KEY = "ILoveSunglasses";
+
 app.use(bodyParser.json());
 
 // Importing the data from JSON files
@@ -21,6 +23,16 @@ app.use((err, req, res, next) => {
 
 app.get('/brands', (req, res) => {
 	res.status(200).json(brands);
+});
+
+app.post('/login', (req, res) => {
+	const { username, password } = req.body;
+	const user = users.find(user => user.login.username === username && user.login.password === password);
+	if (!user) {
+		return res.status(401).json({ error: 'Invalid login info' });
+	}
+	const token = jwt.sign({ username: username }, PRIVATE_KEY, { expiresIn: '1h' });
+	res.status(200).json({token});
 });
 
 // Swagger

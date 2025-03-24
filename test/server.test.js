@@ -28,7 +28,7 @@ describe('POST /login', () => {
       .post('/login')
       .send(loginInfo)
       .end((err, res) => {
-        res.should.have(200);
+        res.should.have.status(200);
         res.body.should.be.an('object');
         res.body.should.have.property('token');
         done();
