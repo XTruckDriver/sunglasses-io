@@ -34,6 +34,22 @@ describe('POST /login', () => {
         done();
       });
   });
+  it('should return 401 code for invalid login', (done) => {
+    const loginInfo = {
+      username: 'RandomGuy',
+      password: 'qwerty'
+    };
+    chai
+      .request(server)
+      .post('/login')
+      .send(loginInfo)
+      .end((err, res) => {
+        res.should.have.status(401);
+        res.body.should.be.an('object');
+        res.body.should.have.property('error').eql('Invalid login info');
+        done();
+      });
+  });
 });
 
 describe('Cart', () => {});
