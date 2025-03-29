@@ -15,6 +15,21 @@ const users = require('../initial-data/users.json');
 const brands = require('../initial-data/brands.json');
 const products = require('../initial-data/products.json');
 
+const verifyToken = (req, res, next) => {
+	const authHeader = req.headers.authorization;
+	if (!authHeader) {
+		return res.status(401).json({ error: 'No token provided' });
+	}
+	const token = authHeader.split(' ')[1];
+	try {
+		const decoded = jwt.verify(token, PRIVATE_KEY);
+		req.username = decoded.username;
+		next();
+	} catch (error) {
+		res.status(401).json({ error: 'Token invalid or expired' });
+	}
+};
+
 // Error handling
 app.use((err, req, res, next) => {
 	console.error(err.stack);
