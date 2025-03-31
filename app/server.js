@@ -50,6 +50,14 @@ app.post('/login', (req, res) => {
 	res.status(200).json({token});
 });
 
+app.get('/me/cart', verifyToken, (req, res) => {
+	const currentUser = users.find(user => user.login.username === req.username);
+	if (!currentUser) {
+		return res.status(404).json({ error: 'User not found' });
+	}
+	res.status(200).json(currentUser.cart);
+});
+
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
