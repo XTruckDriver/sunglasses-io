@@ -52,5 +52,31 @@ describe('POST /login', () => {
   });
 });
 
-describe('Cart', () => {});
+describe('GET /me/cart', () => {
+  let token;
+  
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'yellowleopard753', password: 'jonjon' })
+      .end((err, res) => {
+        token = res.body.token;
+        done();
+      });
+  });
+
+  it('should return cart for authenticated user', (done) => {
+    chai
+      .request(server)
+      .get('/me/cart')
+      .set('Authorization', `Bearer ${token}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        done();
+      });
+  });
+
+});
 
