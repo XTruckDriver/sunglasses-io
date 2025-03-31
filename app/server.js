@@ -36,6 +36,10 @@ app.use((err, req, res, next) => {
 	res.status(500).send('Something broke!');
 });
 
+app.get('/test-auth', verifyToken, (req, res) => {
+	res.status(200).json({ message: 'Authenticated', username: req.username });
+});
+
 app.get('/brands', (req, res) => {
 	res.status(200).json(brands);
 });

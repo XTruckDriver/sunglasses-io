@@ -22,7 +22,7 @@ describe('GET /brands', () => {
 
 describe('POST /login', () => {
   it('should login user and return token', (done) => {
-    const loginInfo = { username: 'yellowleopard753', password: 'jonjon' };
+    const loginInfo = { username: 'lazywolf342', password: 'tucker' };
     chai
       .request(server)
       .post('/login')
@@ -53,3 +53,54 @@ describe('POST /login', () => {
 });
 
 describe('Cart', () => {});
+
+describe('Auth Middleware', () => {
+  let token;
+
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'lazywolf342', password: 'tucker'})
+      .end((err, res) => {
+        token = res.body.token;
+        done();
+      });
+  });
+
+  it('should allow access with a valid token', (done) => {
+    chai
+      .request(server)
+      .get('/test-auth')
+      .set('Authorization', `Bearer ${token}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.have.property('message').eql('Authenticated');
+        res.body.should.have.property('username').eql('lazywolf342');
+        done();
+      });
+  });
+
+  it('should return 401 with no token', (done) => {
+    chai
+      .request(server)
+      .get('/test-auth')
+      .end((err, res) => {
+        res.should.have.status(401);
+        res.body.should.have.property('error').eql('No token provided');
+        done();
+      });
+  });
+
+  it('should return 401 with an invalid token', (done) => {
+    chai
+      .request(server)
+      .get('/test-auth')
+      .set('Authorization', 'Bearer invalidtoken123')
+      .end((err, res) => {
+        res.should.have.status(401);
+        res.body.should.have.property('error').eql('Token invalid or expired');
+        done();
+    });
+  });
+});
