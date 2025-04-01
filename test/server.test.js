@@ -80,3 +80,34 @@ describe('GET /me/cart', () => {
 
 });
 
+describe('POST /me/cart', () => {
+  let token;
+  let addToCart;
+
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'yellowleopard753', password: 'jonjon' })
+      .end((err, res) => {
+        token = res.body.token;
+        done();
+      });
+  });
+  
+  it('should add product to me/cart', (done) => {
+    addToCart = { productId: '1', quantity: 5 };
+
+    chai
+      .request(server)
+      .post('/me/cart')
+      .set('Authorization', `Bearer ${token}`)
+      .send(addToCart)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        res.body.should.deep.include({ productId: '1', quantity: 5 });
+        done();
+      });
+  });
+});
