@@ -58,6 +58,16 @@ app.get('/me/cart', verifyToken, (req, res) => {
 	res.status(200).json(currentUser.cart);
 });
 
+app.post('/me/cart', verifyToken, (req, res) => {
+	const { productId, quantity } = req.body;
+	if (!productId || !quantity) {
+		return res.status(400).json({ error: 'Missing productId or quantity' });
+	}
+	const currentUser = users.find(user => user.login.username === req.username);
+	currentUser.cart.push({ productId, quantity });
+	res.status(200).json(currentUser.cart);
+});
+
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
