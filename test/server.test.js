@@ -111,3 +111,36 @@ describe('POST /me/cart', () => {
       });
   });
 });
+
+describe ('DELETE /me/cart/:productId', () => {
+  let token;
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'yellowleopard753', password: 'jonjon' })
+      .end((err, res) => {
+        token = res.body.token;
+        chai
+          .request(server)
+          .post('/me/cart')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ productId: '1', quantity: 5 })
+          .end(() => done());
+      });
+  });
+
+  it('should delete the item from cart', (done) => {
+    chai
+      .request(server)
+      .delete('/me/cart/1')
+      .set('Authorization', `Bearer ${token}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        res.body.should.not.deep.include({ productId: 1, quantity: 2 });
+        done();
+      });
+  });
+
+});
