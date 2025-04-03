@@ -68,6 +68,13 @@ app.post('/me/cart', verifyToken, (req, res) => {
 	res.status(200).json(currentUser.cart);
 });
 
+app.delete('/me/cart/:productId', verifyToken, (req, res) => {
+	const user = users.find(user => user.login.username === req.username);
+	const productId = req.params.productId;
+	user.cart = user.cart.filter(item => item.productId != productId);
+	res.status(200).json(user.cart);
+});
+
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
