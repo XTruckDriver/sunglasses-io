@@ -144,3 +144,37 @@ describe ('DELETE /me/cart/:productId', () => {
   });
 
 });
+
+describe ('PUT /me/cart/:productId', () => {
+  let token;
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'yellowleopard753', password: 'jonjon' })
+      .end((err, res) => {
+        token = res.body.token;
+        chai
+          .request(server)
+          .post('/me/cart')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ productId: '1', quantity: 5 })
+          .end(() => done());
+      });
+  });
+
+  it('should update quantity of given item in cart', (done) => {
+    chai
+      .request(server)
+      .put('/me/cart/1')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ quantity: 10 })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        res.body.should.deep.include({ productId: '1', quantity: 10 });
+        done();
+      });
+  });
+
+});
