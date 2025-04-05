@@ -75,6 +75,22 @@ app.delete('/me/cart/:productId', verifyToken, (req, res) => {
 	res.status(200).json(user.cart);
 });
 
+app.put('/me/cart/:productId', verifyToken, (req, res) => {
+	const user = users.find(user => user.login.username === req.username);
+	const productId = req.params.productId;
+	const { quantity } = req.body;
+	if (!quantity || typeof quantity !== 'number') {
+		return res.status(400).json({ error: 'Must use valid quantity' });
+	}
+	const item = user.cart.find(item => item.productId ===productId);
+	if (item) {
+		item.quantity = quantity;
+		res.status(200).json(user.cart);
+	} else {
+		res.status(404).json({ error: 'Item not found in cart' });
+	}
+});
+
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
