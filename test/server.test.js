@@ -84,8 +84,129 @@ describe('POST /login', () => {
 });
 
 
-describe('Login', () => {});
+describe('GET /me/cart', () => {
+  let token;
+  
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'yellowleopard753', password: 'jonjon' })
+      .end((err, res) => {
+        token = res.body.token;
+        done();
+      });
+  });
 
+  it('should return cart for authenticated user', (done) => {
+    chai
+      .request(server)
+      .get('/me/cart')
+      .set('Authorization', `Bearer ${token}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        done();
+      });
+  });
 
-describe('Cart', () => {});
+});
 
+describe('POST /me/cart', () => {
+  let token;
+  let addToCart;
+
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'yellowleopard753', password: 'jonjon' })
+      .end((err, res) => {
+        token = res.body.token;
+        done();
+      });
+  });
+  
+  it('should add product to me/cart', (done) => {
+    addToCart = { productId: '1', quantity: 5 };
+
+    chai
+      .request(server)
+      .post('/me/cart')
+      .set('Authorization', `Bearer ${token}`)
+      .send(addToCart)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        res.body.should.deep.include({ productId: '1', quantity: 5 });
+        done();
+      });
+  });
+});
+
+describe ('DELETE /me/cart/:productId', () => {
+  let token;
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'yellowleopard753', password: 'jonjon' })
+      .end((err, res) => {
+        token = res.body.token;
+        chai
+          .request(server)
+          .post('/me/cart')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ productId: '1', quantity: 5 })
+          .end(() => done());
+      });
+  });
+
+  it('should delete the item from cart', (done) => {
+    chai
+      .request(server)
+      .delete('/me/cart/1')
+      .set('Authorization', `Bearer ${token}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        res.body.should.not.deep.include({ productId: 1, quantity: 2 });
+        done();
+      });
+  });
+
+});
+
+describe ('PUT /me/cart/:productId', () => {
+  let token;
+  before((done) => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: 'yellowleopard753', password: 'jonjon' })
+      .end((err, res) => {
+        token = res.body.token;
+        chai
+          .request(server)
+          .post('/me/cart')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ productId: '1', quantity: 5 })
+          .end(() => done());
+      });
+  });
+
+  it('should update quantity of given item in cart', (done) => {
+    chai
+      .request(server)
+      .put('/me/cart/1')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ quantity: 10 })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        res.body.should.deep.include({ productId: '1', quantity: 10 });
+        done();
+      });
+  });
+
+});

@@ -60,6 +60,47 @@ app.get('/brands/:id/products', (req, res) => {
 	res.status(200).json(selectedProducts);
 });
 
+app.get('/me/cart', verifyToken, (req, res) => {
+	const currentUser = users.find(user => user.login.username === req.username);
+	if (!currentUser) {
+		return res.status(404).json({ error: 'User not found' });
+	}
+	res.status(200).json(currentUser.cart);
+});
+
+app.post('/me/cart', verifyToken, (req, res) => {
+	const { productId, quantity } = req.body;
+	if (!productId || !quantity) {
+		return res.status(400).json({ error: 'Missing productId or quantity' });
+	}
+	const currentUser = users.find(user => user.login.username === req.username);
+	currentUser.cart.push({ productId, quantity });
+	res.status(200).json(currentUser.cart);
+});
+
+app.delete('/me/cart/:productId', verifyToken, (req, res) => {
+	const user = users.find(user => user.login.username === req.username);
+	const productId = req.params.productId;
+	user.cart = user.cart.filter(item => item.productId != productId);
+	res.status(200).json(user.cart);
+});
+
+app.put('/me/cart/:productId', verifyToken, (req, res) => {
+	const user = users.find(user => user.login.username === req.username);
+	const productId = req.params.productId;
+	const { quantity } = req.body;
+	if (!quantity || typeof quantity !== 'number') {
+		return res.status(400).json({ error: 'Must use valid quantity' });
+	}
+	const item = user.cart.find(item => item.productId ===productId);
+	if (item) {
+		item.quantity = quantity;
+		res.status(200).json(user.cart);
+	} else {
+		res.status(404).json({ error: 'Item not found in cart' });
+	}
+});
+
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
