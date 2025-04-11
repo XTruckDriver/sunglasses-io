@@ -52,6 +52,7 @@ app.post('/login', (req, res) => {
 	}
 	const token = jwt.sign({ username: username }, PRIVATE_KEY, { expiresIn: '1h' });
 	res.status(200).json({token});
+});
 
 app.get('/brands/:id/products', (req, res) => {
 	const brandId = req.params.id;
