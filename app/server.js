@@ -40,6 +40,10 @@ app.get('/brands', (req, res) => {
 	res.status(200).json(brands);
 });
 
+app.get('/products', (req, res) => {
+	res.status(200).json(products);
+});
+
 app.post('/login', (req, res) => {
 	const { username, password } = req.body;
 	const user = users.find(user => user.login.username === username && user.login.password === password);
