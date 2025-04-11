@@ -33,6 +33,24 @@ describe('/GET products', () => {
   });
 });
 
+describe('/GET brands/:id/products', () => {
+  it('should return array of products for a given brand', (done) => {
+    
+    const brandId = 1;
+      
+    chai
+      .request(server)
+      .get(`/brands/${brandId}/products`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('array');
+        res.body.every(product => product.categoryId == brandId).should.be.true;
+        done();
+      });
+    
+  });
+});
+
 describe('POST /login', () => {
   it('should login user and return token', (done) => {
     const loginInfo = { username: 'lazywolf342', password: 'tucker' };
@@ -64,6 +82,10 @@ describe('POST /login', () => {
       });
   });
 });
+
+
+describe('Login', () => {});
+
 
 describe('Cart', () => {});
 
