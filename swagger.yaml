@@ -1,19 +1,250 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "Sunglasses"
-  description: "API for e-commerce sunglasses store managing brands, products, and user cart"
+  title: "E-Commerce API"
+  description: "API for managing brands, products, and user cart"
 host: "localhost:3000"
 schemes:
   - "http"
-basePath: "/api"
-produces:
-  - "application/json"
+tags:
+  - name: "products"
+    description: "Everything about the store's products"
+  - name: "login"
+    description: "User login"
+  - name: "cart"
+    description: "Access to user's cart"
 paths:
+  /brands:
+    get:
+      tags:
+        - "products"
+      summary: "All Brands"
+      description: "This endpoint returns an array of all brands offered in the store."
+      responses:
+        "200":
+          description: An array of brands
+
+  /brands/{id}/products:
+    get:
+      tags:
+        - "products"
+      summary: "returns array of glasses by brand"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: the ID represents the brand of glasses
+      responses:
+        "200":
+          description: An array of brands
+
   /products:
-    tags:
-      - "products"
-    summary: "returns all products"
-    description: ""
-    produces:
-      - "application/json"
+    get:
+      tags:
+        - "products"
+      summary: "returns array of all products"
+      responses:
+        "200":
+          description: An array of products
+
+  /login:
+    post:
+      tags:
+        - "login"
+      summary: "login user and access to cart"
+      parameters:
+        - in: body
+          name: login credentials
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        "200":
+          description: "Login successful"
+
+  /me/cart:
+    get:
+      tags:
+        - "cart"
+      summary: "returns contents of user's cart"
+      parameters:
+        - in: body
+          name: token
+          required: true
+      responses:
+        "200":
+          description: An array of the user's cart
+
+    post:
+      tags:
+        - "cart"
+      summary: "add item to user's cart"
+      responses:
+        "200":
+          description: "Item added to cart"
+
+  /me/cart/{productId}:
+    delete:
+      tags:
+        - "cart"
+      summary: "deletes an item from user's cart"
+      responses:
+        "200":
+          description: "Item deleted from cart"
+
+    post:
+      tags:
+        - "cart"
+      summary: "changes quantity of an item in user's cart"
+      responses:
+        "200":
+          description: "Quantity of item in cart changed"
+
+definitions:
+  User:
+    type: object
+    properties:
+      gender:
+        type: string
+        example: "female"
+      cart:
+        type: array
+        items:
+          $ref: "#/definitions/CartItem"
+      name:
+        $ref: "#/definitions/Name"
+      location:
+        $ref: "#/definitions/Location"
+      email:
+        type: string
+        example: "susanna.richards@example.com"
+      login:
+        $ref: "#/definitions/Login"
+      dob:
+        type: string
+        example: "1954-10-09 10:47:17"
+      registered:
+        type: string
+        example: "2003-08-03 01:12:24"
+      phone:
+        type: string
+        example: "031-941-6700"
+      cell:
+        type: string
+        example: "081-032-7884"
+      picture:
+        $ref: "#/definitions/Picture"
+      nat:
+        type: string
+        example: "IE"
+
+  Name:
+    type: object
+    properties:
+      title:
+        type: string
+        example: "mrs"
+      first:
+        type: string
+        example: "susanna"
+      last:
+        type: string
+        example: "richards"
+
+  Location:
+    type: object
+    properties:
+      street:
+        type: string
+        example: "2343 herbert road"
+      city:
+        type: string
+        example: "duleek"
+      state:
+        type: string
+        example: "donegal"
+      postcode:
+        type: integer
+        example: 38567
+
+  Login:
+    type: object
+    properties:
+      username:
+        type: string
+        example: "yellowleopard753"
+      password:
+        type: string
+        example: "jonjon"
+    required:
+      - username
+      - password
+
+  Token:
+    type: string
+
+  Picture:
+    type: object
+    properties:
+      large:
+        type: string
+        example: "https://randomuser.me/api/portraits/women/55.jpg"
+      medium:
+        type: string
+        example: "https://randomuser.me/api/portraits/med/women/55.jpg"
+      thumbnail:
+        type: string
+        example: "https://ramdomuser.me/api/portraits/thumb/women/55.jpg"
+
+  CartItem:
+    type: object
+    properties:
+      productId:
+        type: string
+        example: "2"
+      quantity:
+        type: integer
+        example: 5
+
+  Brand:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique identifier representing a specific brand of sunglasses.
+        example: "1"
+      name:
+        type: string
+        description: A string containing the brand name
+        example: "Oakley"
+
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique identifier representing a specific model of sunglasses
+        example: "3"
+      categoryId:
+        type: string
+        description: A string identifier that represents a specific brand of sunglasses
+        example: "1"
+      name:
+        type: string
+        description: Specifies the model of sunglasses
+        example: "Brown Sunglasses"
+      description:
+        type: string
+        description: A description of the specified sunglasses
+        example: "The best glasses in the world"
+      price:
+        type: integer
+        description: A number that represents the price of each pair of specified sunglasses
+        example: 50
+      imageUrls:
+        type: array
+        description: An array of image URLs to display pics of specified product
+        items:
+          type: string
+          example: "https://image.shutterstock.com/z/stock-photo-yellow-sunglasses-white-backgound-600820286.jpg"
