@@ -57,6 +57,9 @@ app.post('/login', (req, res) => {
 app.get('/brands/:id/products', (req, res) => {
 	const brandId = req.params.id;
 	const selectedProducts = products.filter(product => product.categoryId == brandId);
+	if (selectedProducts.length === 0) {
+		return res.status(404).json({ error: 'No products found for this brand' });
+	}
 	res.status(200).json(selectedProducts);
 });
 
