@@ -49,6 +49,18 @@ describe('/GET brands/:id/products', () => {
       });
     
   });
+
+  it('should return 404 if no products found for given brand id', (done) => {
+    chai.request(server)
+      .get('/brands/xyz/products')
+      .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.an('object');
+        res.body.should.have.property('error').eql('No products found for this brand');
+        done();
+      });
+  });
+
 });
 
 describe('POST /login', () => {
