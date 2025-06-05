@@ -28,7 +28,7 @@ paths:
     get:
       tags:
         - "products"
-      summary: "returns array of glasses by brand"
+      summary: "Get products for a specified brand"
       parameters:
         - name: id
           in: path
@@ -37,7 +37,15 @@ paths:
           description: the ID represents the brand of glasses
       responses:
         "200":
-          description: An array of brands
+          description: An array of products by specified brand
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Product"
+        "404":
+          description: No products found for specified brand
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 
   /products:
     get:
@@ -181,9 +189,6 @@ definitions:
       - username
       - password
 
-  Token:
-    type: string
-
   Picture:
     type: object
     properties:
@@ -196,6 +201,16 @@ definitions:
       thumbnail:
         type: string
         example: "https://ramdomuser.me/api/portraits/thumb/women/55.jpg"
+
+  Token:
+    type: string
+
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        types: string
+        example: "No products found for specified brand"
 
   CartItem:
     type: object
