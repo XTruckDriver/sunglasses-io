@@ -24,6 +24,18 @@ const verifyToken = (req, res, next) => {
 	try {
 		const decoded = jwt.verify(token, PRIVATE_KEY);
 		req.username = decoded.username;
+
+		const payload = jwt.decode(token, { complete: true }).payload;
+		const currentExp = payload.exp;
+
+		if (currentExp) {
+			const updatedExp = Math.floor(Date.now() / 1000) + 3600;
+			payload.exp = updatedExp;
+
+			const updatedToken = jwt.sign(payload, PRIVATE_KEY);
+			res.locals.newToken = updatedToken;
+		}
+
 		next();
 	} catch (error) {
 		res.status(401).json({ error: 'Token invalid or expired' });
@@ -68,7 +80,10 @@ app.get('/me/cart', verifyToken, (req, res) => {
 	if (!currentUser) {
 		return res.status(404).json({ error: 'User not found' });
 	}
-	res.status(200).json(currentUser.cart);
+	res.status(200).json({
+		cart: currentUser.cart,
+		token: res.locals.newToken
+	});
 });
 
 app.post('/me/cart', verifyToken, (req, res) => {
