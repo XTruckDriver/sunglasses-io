@@ -93,14 +93,20 @@ app.post('/me/cart', verifyToken, (req, res) => {
 	}
 	const currentUser = users.find(user => user.login.username === req.username);
 	currentUser.cart.push({ productId, quantity });
-	res.status(200).json(currentUser.cart);
+	res.status(200).json({
+		cart: currentUser.cart,
+		token: res.locals.newToken
+	});
 });
 
 app.delete('/me/cart/:productId', verifyToken, (req, res) => {
 	const user = users.find(user => user.login.username === req.username);
 	const productId = req.params.productId;
 	user.cart = user.cart.filter(item => item.productId != productId);
-	res.status(200).json(user.cart);
+	res.status(200).json({
+		cart: user.cart,
+		token: res.locals.newToken
+	});
 });
 
 app.put('/me/cart/:productId', verifyToken, (req, res) => {
@@ -113,7 +119,10 @@ app.put('/me/cart/:productId', verifyToken, (req, res) => {
 	const item = user.cart.find(item => item.productId ===productId);
 	if (item) {
 		item.quantity = quantity;
-		res.status(200).json(user.cart);
+		res.status(200).json({
+			cart: user.cart,
+			token: res.locals.newToken
+		});
 	} else {
 		res.status(404).json({ error: 'Item not found in cart' });
 	}
