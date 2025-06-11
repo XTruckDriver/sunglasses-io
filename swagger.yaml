@@ -18,17 +18,31 @@ paths:
     get:
       tags:
         - "products"
-      summary: "All Brands"
-      description: "This endpoint returns an array of all brands offered in the store."
+      summary: "all brands offered in the store"
+      produces:
+        - application/json
       responses:
         "200":
           description: An array of brands
+
+  /products:
+    get:
+      tags:
+        - "products"
+      summary: "returns array of all products"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: An array of products
 
   /brands/{id}/products:
     get:
       tags:
         - "products"
       summary: "Get products for a specified brand"
+      produces:
+        - application/json
       parameters:
         - name: id
           in: path
@@ -47,20 +61,13 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
 
-  /products:
-    get:
-      tags:
-        - "products"
-      summary: "returns array of all products"
-      responses:
-        "200":
-          description: An array of products
-
   /login:
     post:
       tags:
         - "login"
       summary: "login user and access to cart"
+      produces:
+        - application/json
       parameters:
         - in: body
           name: login credentials
@@ -70,44 +77,88 @@ paths:
       responses:
         "200":
           description: "Login successful"
+        "401":
+          description: "Invalid login info"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 
   /me/cart:
     get:
       tags:
         - "cart"
-      summary: "returns contents of user's cart"
+      summary: "gets user's cart"
+      produces:
+        - application/json
       parameters:
-        - in: body
-          name: token
+        - in: header
+          name: tokenAuthorization
+          type: string
           required: true
+          description: "Bearer token"
       responses:
         "200":
-          description: An array of the user's cart
-
-    post:
-      tags:
-        - "cart"
-      summary: "add item to user's cart"
-      responses:
-        "200":
-          description: "Item added to cart"
+          description: "user's cart and renewed token"
+          schema:
+            $ref: "#/definitions/CartResponse"
+        "404":
+          description: "User not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 
   /me/cart/{productId}:
     delete:
       tags:
         - "cart"
       summary: "deletes an item from user's cart"
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: tokenAuthorization
+          type: string
+          required: true
+          description: "Bearer token"
+        - in: path
+          name: productId
+          type: string
+          required: true
+          description: "ID of product to delete"
       responses:
         "200":
           description: "Item deleted from cart"
+          schema:
+            $ref: "#/definitions/CartResponse"
 
-    post:
+    put:
       tags:
         - "cart"
       summary: "changes quantity of an item in user's cart"
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: tokenAuthorization
+          type: string
+          required: true
+          description: "Bearer token"
+        - in: path
+          name: productId
+          type: string
+          required: true
+          description: "ID of product to change quantity of"
       responses:
         "200":
-          description: "Quantity of item in cart changed"
+          description: "Quantity changed in cart"
+          schema:
+            $ref: "#/definitions/CartResponse"
+        "400":
+          description: "Invalid quantity"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "404":
+          description: "Item not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 
 definitions:
   User:
@@ -202,14 +253,11 @@ definitions:
         type: string
         example: "https://ramdomuser.me/api/portraits/thumb/women/55.jpg"
 
-  Token:
-    type: string
-
   ErrorResponse:
     type: object
     properties:
       error:
-        types: string
+        type: string
         example: "No products found for specified brand"
 
   CartItem:
@@ -221,6 +269,17 @@ definitions:
       quantity:
         type: integer
         example: 5
+
+  CartResponse:
+    type: object
+    properties:
+      cart:
+        type: array
+        items:
+          $ref: "#/definitions/CartItem"
+      token:
+        type: string
+        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InllbGxvd2xlb3BhcmQ3NTMiLCJpYXQiOjE3NDk0ODIxMzIsImV4cCI6MTc0OTQ4NTczMn0.vRtQc5EGzLtC9uGtfXQuR6-j-L-9MiVqLdMrKohxSL4"
 
   Brand:
     type: object
