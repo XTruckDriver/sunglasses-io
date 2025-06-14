@@ -104,6 +104,35 @@ paths:
           description: "User not found"
           schema:
             $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - "cart"
+      summary: "add item to user's cart"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: tokenAuthorization
+          type: string
+          required: true
+          description: "Bearer token"
+        - in: body
+          name: cartItem
+          required: true
+          description: "Item and quantity to add to cart"
+          schema:
+            $ref: "#/definitions/CartItem"
+      responses:
+        "200":
+          description: "Item added to cart"
+          schema:
+            $ref: "#/definitions/CartResponse"
+        "400":
+          description: "Missing id or quantity"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 
   /me/cart/{productId}:
     delete:
@@ -262,12 +291,16 @@ definitions:
 
   CartItem:
     type: object
+    required:
+      - productId
+      - quantity
     properties:
       productId:
         type: string
         example: "2"
       quantity:
         type: integer
+        minimum: 1
         example: 5
 
   CartResponse:
